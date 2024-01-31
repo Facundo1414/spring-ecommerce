@@ -13,17 +13,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String name;
+    private String nombre;
     @Column
     private String username;
     @Column
     private String email;
     @Column
-    private String adress;
+    private String direccion;
     @Column
-    private String phoneNumber;
+    private String telefono;
     @Column
-    private String rol;
+    private String tipo;
     @Column
     private String password;
 
@@ -36,16 +36,43 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String username, String email, String adress, String phoneNumber, String rol, String password, List<Product> products, List<Order> orders) {
+    public User(Long id, String nombre, String username, String email, String direccion, String telefono, String tipo, String password) {
         this.id = id;
-        this.name = name;
+        this.nombre = nombre;
         this.username = username;
         this.email = email;
-        this.adress = adress;
-        this.phoneNumber = phoneNumber;
-        this.rol = rol;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.tipo = tipo;
+        this.password = password;
+    }
+
+    public User(Long id, String nombre, String username, String email, String direccion, String telefono, String tipo, String password, List<Product> products, List<Order> orders) {
+        this.id = id;
+        this.nombre = nombre;
+        this.username = username;
+        this.email = email;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.tipo = tipo;
         this.password = password;
         this.products = products;
         this.orders = orders;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", direccion='" + direccion + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", password='" + password + '\'' +
+                ", products=" + products +
+                ", orders=" + orders +
+                '}';
     }
 }

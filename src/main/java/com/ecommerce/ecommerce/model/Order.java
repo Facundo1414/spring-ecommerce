@@ -12,9 +12,9 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String number;
-    private Date dateCreated;
-    private Date dateReceipt;
+    private String numero;
+    private Date fechaCreacion;
+    private Date fechaRecibida;
     private double total;
 
     @ManyToOne
@@ -26,19 +26,25 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, String number, Date dateCreated, Date dateReceipt) {
+    public Order(Long id, String numero, Date fechaCreacion, Date fechaRecibida, double total, User user) {
         this.id = id;
-        this.number = number;
-        this.dateCreated = dateCreated;
-        this.dateReceipt = dateReceipt;
-    }
-
-    public Order(Long id, String number, Date dateCreated, Date dateReceipt, double total, User user) {
-        this.id = id;
-        this.number = number;
-        this.dateCreated = dateCreated;
-        this.dateReceipt = dateReceipt;
+        this.numero = numero;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaRecibida = fechaRecibida;
         this.total = total;
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", numero='" + numero + '\'' +
+                ", fechaCreacion=" + fechaCreacion +
+                ", fechaRecibida=" + fechaRecibida +
+                ", total=" + total +
+                ", user=" + user +
+                ", orderDetail=" + orderDetail +
+                '}';
     }
 }

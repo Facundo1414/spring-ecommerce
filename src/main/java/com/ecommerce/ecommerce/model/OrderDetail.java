@@ -10,9 +10,9 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private double quantity;
-    private double price;
+    private String nombre;
+    private double cantidad;
+    private double precio;
     private double total;
 
     @OneToOne
@@ -24,13 +24,15 @@ public class OrderDetail {
     public OrderDetail() {
     }
 
-    public OrderDetail(Long id, String name, double quantity, double price, double total, Order order, Product product) {
+    public OrderDetail(Long id, String nombre, double cantidad, double precio, double total, Order order, Product product) {
         this.id = id;
-        this.name = name;
-        this.quantity = quantity;
-        this.price = price;
+        this.nombre = nombre;
+        this.cantidad = cantidad;
+        this.precio = precio;
         this.total = total;
         this.order = order;
         this.product = product;
     }
+
+
 }

@@ -13,15 +13,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String name;
+    private String nombre;
     @Column
-    private String detail;
+    private String descripcion;
     @Column
-    private String image;
+    private String imagen;
     @Column
-    private double price;
+    private double precio;
     @Column
-    private int quantity;
+    private int cantidad;
 
     @ManyToOne
     private User user;
@@ -29,22 +29,25 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String name, String detail, String image, double price, int stock) {
+    public Product(Long id, String nombre, String descripcion, String imagen, double precio, int cantidad, User user) {
         this.id = id;
-        this.name = name;
-        this.detail = detail;
-        this.image = image;
-        this.price = price;
-        this.quantity = stock;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.user = user;
     }
 
-    public Product(Long id, String name, String detail, String image, double price, int quantity, User user) {
-        this.id = id;
-        this.name = name;
-        this.detail = detail;
-        this.image = image;
-        this.price = price;
-        this.quantity = quantity;
-        this.user = user;
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", imagen='" + imagen + '\'' +
+                ", precio=" + precio +
+                ", cantidad=" + cantidad +
+                '}';
     }
 }
