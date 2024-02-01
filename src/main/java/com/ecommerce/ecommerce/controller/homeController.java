@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -24,7 +25,7 @@ public class homeController {
     private ProductService productService;
 
     // almacenar detalles de la orden
-    private List<OrderDetail> orderDetails = new ArrayList<>();
+    private List<OrderDetail> ordersList = new ArrayList<>();
     //datos de la orden
     private Order order = new Order();
 
@@ -47,7 +48,7 @@ public class homeController {
     }
 
     @PostMapping("/cart")
-    public String addCart(@RequestParam Long id, @RequestParam Integer cantidad){
+    public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, Model model){
         OrderDetail orderDetail = new OrderDetail();
         Product product = new Product();
         double sumaTotal = 0;
@@ -55,12 +56,71 @@ public class homeController {
         Optional<Product> productOptional = productService.get(id);
         product = productOptional.get();
 
-        logger.info("producto agregado: {}",product);
-        logger.info("cantidad : {}", cantidad);
+        // guardamos en detalle orden los datos obtenidos del producto recibido por el id
+        orderDetail.setNombre(product.getNombre());
+        orderDetail.setCantidad(cantidad);
+        orderDetail.setPrecio(product.getPrecio());
+        orderDetail.setTotal(product.getPrecio()  * cantidad);
+        orderDetail.setProduct(product);
+
+        //TODO reveer el tema de que se agreguen y habilitar que se sumen productos a la lista
+        //validar que el producto no se repita en el carrito
+        Long idProduct = product.getId();
+        boolean ingresado = ordersList.stream().anyMatch(p -> Objects.equals(p.getProduct().getId(), idProduct));
+
+        if (!ingresado){
+            // agregamos la orden a la lista de ordenes
+            ordersList.add(orderDetail);
+        }
+
+
+
+        // sumamos todas los subtotales de las ordenes
+        sumaTotal = ordersList.stream().mapToDouble(OrderDetail::getTotal).sum();
+        order.setTotal(sumaTotal);
+        // pasamos la lista terminada a la vista
+        model.addAttribute("cart", ordersList);
+        model.addAttribute("orden",order);
 
         return "user/carrito";
     }
 
+    @GetMapping("/delete/cart/{id}")
+    public String delete(@PathVariable Long id,Model model){
+        List<OrderDetail> ordenesNueva = new ArrayList<OrderDetail>();
+
+        for (OrderDetail detalleOrden: ordersList){
+            if (detalleOrden.getProduct().getId() != id){
+                ordenesNueva.add(detalleOrden);
+            }
+        }
+        // actualizamos la lista
+        ordersList = ordenesNueva;
+
+        double sumaTotal = 0;
+        // sumamos todas los subtotales de las ordenes
+        sumaTotal = ordersList.stream().mapToDouble(OrderDetail::getTotal).sum();
+        order.setTotal(sumaTotal);
+        // pasamos la lista terminada a la vista
+        model.addAttribute("cart", ordersList);
+        model.addAttribute("orden",order);
+
+        return "user/carrito";
+    }
+
+
+    @GetMapping("/getCart")
+    public String getCart(Model model){
+        model.addAttribute("cart", ordersList);
+        model.addAttribute("orden",order);
+        return "/user/carrito";
+    }
+
+    @GetMapping("/order")
+    public String order(){
+
+        return "user/resumenorden";
+    }
 
 
 }
