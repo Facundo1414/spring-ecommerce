@@ -3,7 +3,7 @@ package com.ecommerce.ecommerce.controller;
 
 import com.ecommerce.ecommerce.model.Product;
 import com.ecommerce.ecommerce.model.User;
-import com.ecommerce.ecommerce.service.ProductService;
+import com.ecommerce.ecommerce.service.IProductService;
 import com.ecommerce.ecommerce.service.UploadFileService;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ public class ProductController {
     private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
-    private ProductService productService;
+    private IProductService IProductService;
     @Autowired
     private UploadFileService uploadFileService;
 
     @GetMapping("")
     public String show (Model model){
-        model.addAttribute("productos",productService.findAll());
+        model.addAttribute("productos", IProductService.findAll());
         return "products/show";
     }
 
@@ -48,14 +48,14 @@ public class ProductController {
             String nombreImagen = uploadFileService.saveImage(file);
             product.setImagen(nombreImagen);
         }
-        productService.save(product);
+        IProductService.save(product);
         return "redirect:/products";
     }
 
     @GetMapping ("/edit/{id}")
     public String edit(@PathVariable Long id, Model model){
         Product productBuscado = new Product();
-        Optional<Product> optionalProduct = productService.get(id);
+        Optional<Product> optionalProduct = IProductService.get(id);
 
         if (optionalProduct.isPresent()){
             productBuscado = optionalProduct.get();
@@ -68,7 +68,7 @@ public class ProductController {
     @PostMapping("/update")
     public String update(Product product, @RequestParam("img") MultipartFile file) throws IOException {
         Product p = new Product();
-        p = productService.get(product.getId()).get();
+        p = IProductService.get(product.getId()).get();
 
         if (file.isEmpty()) { // cuando queremos editar el producto pero no la imagen
             product.setImagen(p.getImagen());
@@ -83,21 +83,21 @@ public class ProductController {
             product.setImagen(nombreImagen);
         }
         product.setUser(p.getUser());
-        productService.update(product);
+        IProductService.update(product);
         return "redirect:/products";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) throws IOException {
         Product p = new Product();
-        p = productService.get(id).get();
+        p = IProductService.get(id).get();
 
         if (!p.getImagen().equals("default.jpg")){
             uploadFileService.delete(p.getImagen());
         }
 
 
-        productService.delete(id);
+        IProductService.delete(id);
         return "redirect:/products";
     }
 
