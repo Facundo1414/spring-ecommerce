@@ -15,8 +15,10 @@ public class OrderDetail {
     private double precio;
     private double total;
 
+    //TODO se deben generar varios order detail para una sola orden
     @OneToOne
     private Order order;
+
 
     @ManyToOne
     private Product product;

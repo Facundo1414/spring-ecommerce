@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -16,23 +17,13 @@ public class Order {
     private Date fechaCreacion;
     private Date fechaRecibida;
     private double total;
-
     @ManyToOne
     private User user;
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetail> orderDetail;
 
-    @OneToOne(mappedBy = "order")
-    private OrderDetail orderDetail;
 
     public Order() {
-    }
-
-    public Order(Long id, String numero, Date fechaCreacion, Date fechaRecibida, double total, User user) {
-        this.id = id;
-        this.numero = numero;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaRecibida = fechaRecibida;
-        this.total = total;
-        this.user = user;
     }
 
     @Override

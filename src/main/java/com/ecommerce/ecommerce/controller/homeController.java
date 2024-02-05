@@ -4,6 +4,8 @@ import com.ecommerce.ecommerce.model.Order;
 import com.ecommerce.ecommerce.model.OrderDetail;
 import com.ecommerce.ecommerce.model.Product;
 import com.ecommerce.ecommerce.model.User;
+import com.ecommerce.ecommerce.service.IOrderDetailService;
+import com.ecommerce.ecommerce.service.IOrderService;
 import com.ecommerce.ecommerce.service.IProductService;
 import com.ecommerce.ecommerce.service.IUserService;
 import org.slf4j.Logger;
@@ -13,10 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/")
@@ -27,11 +27,17 @@ public class homeController {
     private IProductService IProductService;
     @Autowired
     private IUserService IUserService;
+    @Autowired
+    private IOrderService iOrderService;
+    @Autowired
+    private IOrderDetailService iOrderDetailService;
+
 
     // almacenar detalles de la orden
-    private List<OrderDetail> ordersList = new ArrayList<>();
+    private List<OrderDetail> detalles = new ArrayList<>();
     //datos de la orden
     private Order order = new Order();
+
 
     @GetMapping("")
     public String home(Model model){
@@ -70,20 +76,20 @@ public class homeController {
         //TODO reveer el tema de que se agreguen y habilitar que se sumen productos a la lista
         //validar que el producto no se repita en el carrito
         Long idProduct = product.getId();
-        boolean ingresado = ordersList.stream().anyMatch(p -> Objects.equals(p.getProduct().getId(), idProduct));
+        boolean ingresado = detalles.stream().anyMatch(p -> Objects.equals(p.getProduct().getId(), idProduct));
 
         if (!ingresado){
             // agregamos la orden a la lista de ordenes
-            ordersList.add(orderDetail);
+            detalles.add(orderDetail);
         }
 
 
 
         // sumamos todas los subtotales de las ordenes
-        sumaTotal = ordersList.stream().mapToDouble(OrderDetail::getTotal).sum();
+        sumaTotal = detalles.stream().mapToDouble(OrderDetail::getTotal).sum();
         order.setTotal(sumaTotal);
         // pasamos la lista terminada a la vista
-        model.addAttribute("cart", ordersList);
+        model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
 
         return "user/carrito";
@@ -93,20 +99,20 @@ public class homeController {
     public String delete(@PathVariable Long id,Model model){
         List<OrderDetail> ordenesNueva = new ArrayList<OrderDetail>();
 
-        for (OrderDetail detalleOrden: ordersList){
+        for (OrderDetail detalleOrden: detalles){
             if (detalleOrden.getProduct().getId() != id){
                 ordenesNueva.add(detalleOrden);
             }
         }
         // actualizamos la lista
-        ordersList = ordenesNueva;
+        detalles = ordenesNueva;
 
         double sumaTotal = 0;
         // sumamos todas los subtotales de las ordenes
-        sumaTotal = ordersList.stream().mapToDouble(OrderDetail::getTotal).sum();
+        sumaTotal = detalles.stream().mapToDouble(OrderDetail::getTotal).sum();
         order.setTotal(sumaTotal);
         // pasamos la lista terminada a la vista
-        model.addAttribute("cart", ordersList);
+        model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
 
         return "user/carrito";
@@ -115,20 +121,20 @@ public class homeController {
 
     @GetMapping("/getCart")
     public String getCart(Model model){
-        model.addAttribute("cart", ordersList);
+        model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
         return "/user/carrito";
     }
 
     @GetMapping("/order")
     public String order(Model model){
-        model.addAttribute("cart", ordersList);
+        model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
 
         // obtenemos el usuario
         User user = IUserService.findById(1L).get(); // momentaneo
 
-        model.addAttribute("cart",ordersList);
+        model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
         model.addAttribute("user",user);
 
@@ -136,6 +142,41 @@ public class homeController {
     }
 
 
+    @GetMapping("/saveOrder")
+    public String saveOrder(){
+        Date fechaCreacion = new Date();
+        order.setFechaCreacion(fechaCreacion);
+        order.setNumero(iOrderService.generarNumeroOrder());
 
+        // obtenemos el usuario
+        User user = IUserService.findById(1L).get(); // momentaneo
+        order.setUser(user);
+        //Guardamos los datos de la orden
+        iOrderService.save(order);
+
+        // guardar detalles
+        for (OrderDetail orderDetail: detalles){
+            orderDetail.setOrder(order);
+            iOrderDetailService.save(orderDetail);
+        }
+
+        // limpiar valores de la lista
+        order = new Order();
+        detalles.clear();
+
+
+        return "redirect:/";
+    }
+
+    @PostMapping("/search")
+    public String searchProduct(@RequestParam String nombre, Model model){
+        logger.info("Nombre del producto: {}",nombre);
+        //obtenemos una lista de los productos que contengan la palabra buscada
+        List<Product> products = IProductService.findAll().stream().filter(p -> p.getNombre().toLowerCase().contains(nombre.toLowerCase())).toList();
+
+        model.addAttribute("productos",products);
+        return "user/home";
+    }
 
 }
+

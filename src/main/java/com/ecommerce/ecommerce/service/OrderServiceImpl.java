@@ -24,6 +24,7 @@ public class OrderServiceImpl implements IOrderService{
         return iOrderRepository.findAll();
     }
 
+    @Override
     public String generarNumeroOrder() {
         int numero = 0;
         String numeroConCatenado = "";
