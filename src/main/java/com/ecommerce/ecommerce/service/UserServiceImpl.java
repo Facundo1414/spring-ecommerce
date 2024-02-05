@@ -16,4 +16,9 @@ public class UserServiceImpl implements IUserService {
     public Optional<User> findById(Long id) {
         return iUserRepository.findById(id);
     }
+
+    @Override
+    public User save(User user) {
+        return iUserRepository.save(user);
+    }
 }
