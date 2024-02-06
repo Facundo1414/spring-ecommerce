@@ -4,7 +4,9 @@ package com.ecommerce.ecommerce.controller;
 import com.ecommerce.ecommerce.model.Product;
 import com.ecommerce.ecommerce.model.User;
 import com.ecommerce.ecommerce.service.IProductService;
+import com.ecommerce.ecommerce.service.IUserService;
 import com.ecommerce.ecommerce.service.UploadFileService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,8 @@ public class ProductController {
     private IProductService IProductService;
     @Autowired
     private UploadFileService uploadFileService;
+    @Autowired
+    private IUserService userService;
 
     @GetMapping("")
     public String show (Model model){
@@ -38,9 +42,15 @@ public class ProductController {
     }
 
     @PostMapping("/save")
-    public String save(Product product,@RequestParam("img") MultipartFile file) throws IOException {
-        logger.info("Este es el objeto a guardar {}", product);
-        User user = new User(1L,"","","","","","","");
+    public String save(Product product, @RequestParam("img") MultipartFile file, HttpSession session) throws IOException {
+
+        // obtenemos el usuario
+        User user = userService.findById(
+                Long.parseLong(
+                        session.getAttribute("idUser")
+                                .toString())).get();
+
+        // guardamos el usuario
         product.setUser(user);
 
         // logica para la imagen

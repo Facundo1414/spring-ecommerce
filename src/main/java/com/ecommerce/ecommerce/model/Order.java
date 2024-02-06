@@ -19,23 +19,13 @@ public class Order {
     private double total;
     @ManyToOne
     private User user;
-    @OneToMany(mappedBy = "order")
+
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetail;
 
 
     public Order() {
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", numero='" + numero + '\'' +
-                ", fechaCreacion=" + fechaCreacion +
-                ", fechaRecibida=" + fechaRecibida +
-                ", total=" + total +
-                ", user=" + user +
-                ", orderDetail=" + orderDetail +
-                '}';
-    }
+
 }

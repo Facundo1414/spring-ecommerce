@@ -8,6 +8,7 @@ import com.ecommerce.ecommerce.service.IOrderDetailService;
 import com.ecommerce.ecommerce.service.IOrderService;
 import com.ecommerce.ecommerce.service.IProductService;
 import com.ecommerce.ecommerce.service.IUserService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,9 @@ public class homeController {
 
 
     @GetMapping("")
-    public String home(Model model){
+    public String home(Model model, HttpSession session){
+        logger.info("id del usuario actual: {}" , session.getAttribute("idUser"));
+
         model.addAttribute("productos", IProductService.findAll());
         return "user/home";
     }
@@ -127,31 +130,38 @@ public class homeController {
     }
 
     @GetMapping("/order")
-    public String order(Model model){
+    public String order(Model model, HttpSession session){
         model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
 
         // obtenemos el usuario
-        User user = IUserService.findById(1L).get(); // momentaneo
+        Optional<User> user = IUserService.findById(
+                Long.parseLong(
+                        session.getAttribute("idUser")
+                                .toString()));
 
         model.addAttribute("cart", detalles);
         model.addAttribute("orden",order);
-        model.addAttribute("user",user);
+        model.addAttribute("user",user.get());
 
         return "user/resumenorden";
     }
 
 
     @GetMapping("/saveOrder")
-    public String saveOrder(){
+    public String saveOrder(HttpSession session){
         Date fechaCreacion = new Date();
         order.setFechaCreacion(fechaCreacion);
         order.setNumero(iOrderService.generarNumeroOrder());
 
         // obtenemos el usuario
-        User user = IUserService.findById(1L).get(); // momentaneo
-        order.setUser(user);
+        Optional<User> user = IUserService.findById(
+                Long.parseLong(
+                        session.getAttribute("idUser")
+                                .toString()));
+
         //Guardamos los datos de la orden
+        order.setUser(user.get());
         iOrderService.save(order);
 
         // guardar detalles

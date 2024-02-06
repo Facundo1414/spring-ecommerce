@@ -15,10 +15,9 @@ public class OrderDetail {
     private double precio;
     private double total;
 
-    //TODO se deben generar varios order detail para una sola orden
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
-
 
     @ManyToOne
     private Product product;
@@ -26,15 +25,7 @@ public class OrderDetail {
     public OrderDetail() {
     }
 
-    public OrderDetail(Long id, String nombre, double cantidad, double precio, double total, Order order, Product product) {
-        this.id = id;
-        this.nombre = nombre;
-        this.cantidad = cantidad;
-        this.precio = precio;
-        this.total = total;
-        this.order = order;
-        this.product = product;
-    }
+
 
 
 }
