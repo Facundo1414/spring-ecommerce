@@ -71,8 +71,6 @@ public class User {
                 ", telefono='" + telefono + '\'' +
                 ", tipo='" + tipo + '\'' +
                 ", password='" + password + '\'' +
-                ", products=" + products +
-                ", orders=" + orders +
                 '}';
     }
 }

@@ -21,4 +21,9 @@ public class UserServiceImpl implements IUserService {
     public User save(User user) {
         return iUserRepository.save(user);
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return iUserRepository.findByEmail(email);
+    }
 }
