@@ -61,6 +61,12 @@ public class UserController {
         return  "redirect:/";
     }
 
+    @GetMapping("/logOut")
+    public String logOut(HttpSession session){
+        session.removeAttribute("idUser");
+        return "redirect:/";
+    }
+
     @GetMapping("/shopping")
     public String shopping(Model model, HttpSession session){
         // este modelo se lo devuelve a la vista de compras
