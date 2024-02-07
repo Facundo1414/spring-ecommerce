@@ -1,52 +1,55 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-  <!-- Navigation -->
-  <div th:fragment="header">
+<!-- Navigation -->
+<div th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" th:href="@{/admin}">A&F eCommerce</a>
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/admin}">A&F eCommerce</a>
 
-        <form class="form-inline my-2 my-lg-0" method="post"
-              action="#">
-          <input class="form-control mr-sm-2" type="search"
-                 placeholder="Buscar" aria-label="Search" name="nombre"
-                 autocomplete="off">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-        </form>
+            <form class="form-inline my-2 my-lg-0" method="post"
+                  action="#">
+                <input class="form-control mr-sm-2" type="search"
+                       placeholder="Buscar" aria-label="Search" name="nombre"
+                       autocomplete="off">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
 
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown"><a
-                    class="nav-link dropdown-toggle" href="#"
-                    id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false"> ADMIN </a>
-              <div class="dropdown-menu"
-                   aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" th:href="@{/products}">Productos</a>
-                <a class="dropdown-item" th:href="@{/user/logOut}">Log Out</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown"><a
+                            class="nav-link dropdown-toggle" href="#"
+                            id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"> ADMIN </a>
+                        <div class="dropdown-menu"
+                             aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" th:href="@{/products}">Productos</a>
+                            <a class="dropdown-item" th:href="@{/admin/users}">Usuarios</a>
+                            <a class="dropdown-item" th:href="@{/admin/orders}">Ordenes</a>
+                            <a class="dropdown-item" th:href="@{/user/logOut}">Log Out</a>
 
-              </div>
-            </li>
-          </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
-  </div>
+</div>
 
 
- <div th:fragment="footer">
-   <footer class="py-5 bg-dark">
-     <div class="container">
-       <p class="m-0 text-center text-white">Copyright &copy; A&F eCommerce 2024</p>
-     </div>
-     <!-- /.container -->
-   </footer>
+<div th:fragment="footer">
+    <footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; A&F eCommerce 2024</p>
+        </div>
+        <!-- /.container -->
+    </footer>
 
- </div>
+</div>
 
-  </html>
+</html>
