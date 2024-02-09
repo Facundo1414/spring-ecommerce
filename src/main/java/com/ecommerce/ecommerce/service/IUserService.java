@@ -9,5 +9,7 @@ public interface IUserService {
     Optional<User> findById(Long id);
     User save(User user);
     Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
     List<User> findAll();
+
 }

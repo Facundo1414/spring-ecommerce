@@ -9,6 +9,7 @@ import com.ecommerce.ecommerce.service.UploadFileService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,17 +31,20 @@ public class ProductController {
     @Autowired
     private IUserService userService;
 
+    @PreAuthorize("permitAll")
     @GetMapping("")
     public String show (Model model){
         model.addAttribute("productos", IProductService.findAll());
         return "products/show";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/create")
     public String create(){
         return "products/create";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
     public String save(Product product, @RequestParam("img") MultipartFile file, HttpSession session) throws IOException {
 
@@ -62,6 +66,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping ("/edit/{id}")
     public String edit(@PathVariable Long id, Model model){
         Product productBuscado = new Product();
@@ -75,6 +80,7 @@ public class ProductController {
         return "products/edit";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update")
     public String update(Product product, @RequestParam("img") MultipartFile file) throws IOException {
         Product p = new Product();
@@ -97,6 +103,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) throws IOException {
         Product p = new Product();

@@ -8,10 +8,15 @@ import com.ecommerce.ecommerce.service.IOrderDetailService;
 import com.ecommerce.ecommerce.service.IOrderService;
 import com.ecommerce.ecommerce.service.IProductService;
 import com.ecommerce.ecommerce.service.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +44,7 @@ public class homeController {
     //datos de la orden
     private Order order = new Order();
 
-
+    @PreAuthorize("permitAll")
     @GetMapping("")
     public String home(Model model, HttpSession session){
         logger.info("id del usuario actual: {}" , session.getAttribute("idUser"));
@@ -52,6 +57,7 @@ public class homeController {
         return "user/home";
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping("productohome/{id}")
     public String productohome(@PathVariable Long id, Model model){
         logger.info("id del producto enviado por parametro {}", id);
@@ -64,6 +70,7 @@ public class homeController {
         return "user/productohome";
     }
 
+    @PreAuthorize("permitAll")
     @PostMapping("/cart")
     public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, Model model){
         OrderDetail orderDetail = new OrderDetail();
@@ -102,6 +109,7 @@ public class homeController {
         return "user/carrito";
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping("/delete/cart/{id}")
     public String delete(@PathVariable Long id,Model model){
         List<OrderDetail> ordenesNueva = new ArrayList<OrderDetail>();
@@ -126,6 +134,7 @@ public class homeController {
     }
 
 
+    @PreAuthorize("permitAll")
     @GetMapping("/getCart")
     public String getCart(Model model, HttpSession session){
         model.addAttribute("cart", detalles);
@@ -137,6 +146,7 @@ public class homeController {
         return "/user/carrito";
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping("/order")
     public String order(Model model, HttpSession session){
         model.addAttribute("cart", detalles);
@@ -156,6 +166,8 @@ public class homeController {
     }
 
 
+
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/saveOrder")
     public String saveOrder(HttpSession session){
         Date fechaCreacion = new Date();
@@ -169,6 +181,9 @@ public class homeController {
                                 .toString()));
 
         //Guardamos los datos de la orden
+        if (user.isEmpty()){
+            return "redirect:/login";
+        }
         order.setUser(user.get());
         iOrderService.save(order);
 
@@ -186,6 +201,7 @@ public class homeController {
         return "redirect:/";
     }
 
+    @PreAuthorize("permitAll")
     @PostMapping("/search")
     public String searchProduct(@RequestParam String nombre, Model model){
         logger.info("Nombre del producto: {}",nombre);
@@ -194,6 +210,24 @@ public class homeController {
 
         model.addAttribute("productos",products);
         return "user/home";
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handGenericException(Exception e, HttpServletRequest request){
+        Map<String, String> apiError = new HashMap<>();
+        apiError.put("message",e.getLocalizedMessage());
+        apiError.put("timestamp",new Date().toString());
+        apiError.put("url", request.getRequestURL().toString());
+        apiError.put("http-method", request.getMethod());
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        if (e instanceof AccessDeniedException){
+            status = HttpStatus.FORBIDDEN;
+        }
+
+        return ResponseEntity.status(status).body(apiError);
     }
 
 }
