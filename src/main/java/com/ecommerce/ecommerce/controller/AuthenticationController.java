@@ -3,7 +3,9 @@ package com.ecommerce.ecommerce.controller;
 
 import com.ecommerce.ecommerce.dto.AuthenticationRequest;
 import com.ecommerce.ecommerce.dto.AuthenticationResponse;
+import com.ecommerce.ecommerce.model.User;
 import com.ecommerce.ecommerce.service.AuthenticationService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 
 @RestController
@@ -25,10 +29,13 @@ public class AuthenticationController {
 
     @PreAuthorize("permitAll")
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> login (@RequestBody @Valid AuthenticationRequest authenticationRequest ){
+    public ResponseEntity<AuthenticationResponse> login (User user, HttpSession session){
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(user.getUsername(),user.getPassword());
         AuthenticationResponse jwtDto = authenticationService.login(authenticationRequest);
 
-        logger.info("auth controller devuelve un jwtDto: {}", jwtDto);
+
+        //
+        session.setAttribute("idUser", user.getId());
 
         return ResponseEntity.ok(jwtDto);
     }

@@ -55,11 +55,17 @@
         </div>
       </div>
     </div>
-    <form th:action="@{/user/save}" method="post">
+    <form th:action="@{/session/save}" method="post">
       <div class="form-group">
         <label for="nombres">Nombre Completo:</label> <input type="text"
           class="form-control" id="nombre" name="nombre" required
           placeholder="Ingrese su nombre y apellido" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username:</label> <input type="text"
+          class="form-control" id="username" name="username" required
+          placeholder="Ingrese un nombre de usuario" autocomplete="off">
       </div>
 
       <div class="form-group">

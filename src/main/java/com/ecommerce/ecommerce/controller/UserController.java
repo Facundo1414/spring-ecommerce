@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce.controller;
 
+import com.ecommerce.ecommerce.config.security.SecurityBeansInjector;
 import com.ecommerce.ecommerce.model.Order;
 import com.ecommerce.ecommerce.model.User;
 import com.ecommerce.ecommerce.service.IOrderService;
@@ -9,6 +10,10 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,52 +33,12 @@ public class UserController {
     @Autowired
     private IOrderService orderService;
 
-    //TODO metodos deprecados
-    @PreAuthorize("permitAll")
-    @GetMapping("/signUp")
-    public String create(){
-        return "user/registro";
-    }
+    @Autowired
+    private HttpSession session;
 
-    @PreAuthorize("permitAll")
-    @PostMapping("/save")
-    public String save(User user){
-        logger.info("Usuario registro: {}", user);
-        if (user != null){
-            if (!user.getNombre().isEmpty() || !user.getEmail().isEmpty() || !user.getPassword().isEmpty()){
-            user.setRole(Role.USER);
-            userService.save(user);}
-        }
-        else {logger.info("usuario vacio o datos incompletos: {}", user);}
-        return "redirect:/";
-    }
+    @Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @PreAuthorize("permitAll")
-    @GetMapping("/login")
-    public String login(){
-        return "user/login";
-    }
-
-    @PreAuthorize("permitAll")
-    @PostMapping("/logOn")
-    public String getIn(User user, HttpSession session){
-        Optional<User> userDB = userService.findByEmail(user.getEmail());
-        if (userDB.isPresent()){
-            session.setAttribute("idUser", userDB.get().getId());
-            if (userDB.get().getRole().getPermissions().stream().map(permission -> false).isParallel()){
-                return "redirect:/admin";
-            }
-        }
-        else {logger.info("usuario no encontrado");}
-        return  "redirect:/";
-    }
-
-    @PreAuthorize("permitAll")
-    @GetMapping("/logOut")
-    public String logOut(HttpSession session){
-        session.removeAttribute("idUser");
-        return "redirect:/";
-    }
 
 
     @PreAuthorize("hasRole('USER')")
@@ -91,7 +56,7 @@ public class UserController {
         return "user/compras";
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/detail/{id}")
     public String getDetail(@PathVariable Long id,HttpSession session,Model model){
         //sesion
@@ -104,5 +69,23 @@ public class UserController {
 
         return "user/detallecompra";
     }
+
+
+/*    public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException {
+        Optional<User> user = userService.findByUsername(username);
+        if (user.isPresent()){
+            session.setAttribute("idUser", user.get().getId());
+            User user1 = user.get();
+
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user1.getUsername())
+                    .password(bCryptPasswordEncoder.encode(user1.getPassword()))
+                    .roles(user1.getRole().name())
+                    .authorities(user1.getAuthorities())
+                    .build();
+        }
+        else throw new UsernameNotFoundException("User not found");
+    }*/
+
 
 }

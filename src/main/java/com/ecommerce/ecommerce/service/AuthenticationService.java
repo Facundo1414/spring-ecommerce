@@ -37,19 +37,12 @@ public class AuthenticationService {
                 authenticationRequest.getUsername(), authenticationRequest.getPassword()
         );
 
-        logger.info("authenticationToken contiene: {}", authenticationToken);
-
         authenticationManager.authenticate(authenticationToken);
 
         // una vez logeado buscaremos el user de la base de datos
         User user = userService.findByUsername(authenticationRequest.getUsername()).get();
 
-        logger.info("usuario obtenido para el response despues de authenticate : {}", user);
-
         String jwt = jwtService.generateToken(user, generateExtraClaims(user));
-
-        logger.info("jwt generado por el servicio jwtService: {}",jwt);
-
 
         return new AuthenticationResponse(jwt);
     }

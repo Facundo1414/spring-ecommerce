@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +26,7 @@ public class HttpSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -36,13 +37,21 @@ public class HttpSecurityConfig {
                 //ahora inyectamos el dao proveniente de authnetication provider
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                //ahora vamos a manejar los end points y sus permisos
                 //.authorizeHttpRequests(viewRequestMatchers())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        //.addLogoutHandler(logoutHandler)
+                )
         ;
 
 
         return httpSecurity.build();
     }
+
+
+
+
 
     private static Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> viewRequestMatchers() {
         return authConfig -> {
